@@ -249,6 +249,13 @@ def expect_reject(label, fn):
         check(True, label)
 
 
+def expect_reject_message(label, expected, fn):
+    try:
+        fn()
+        check(False, label)
+    except Exception as exc:
+        check(str(exc) == expected, label)
+
 def as_(addr):
     GL.message.sender_address = addr
     return addr
@@ -446,6 +453,8 @@ expect_reject("empty dispute reason rejected",
               lambda: c.dispute("   "))
 c.dispute("Please re-check the cited sources.")
 check(state(c)["status"] == "disputed", "staker dispute accepted")
+check(state(c)["dispute_round"] == 1,
+      "first dispute sets explicit round to one")
 
 # T10: PERMISSIONLESS resolve_dispute by a stranger ----------------------------
 print("\n[T10] permissionless resolve_dispute by a STRANGER")
@@ -641,6 +650,95 @@ cX.void()                  # same stranger, now permitted
 check(state(cX)["status"] == "voided"
       and state(cX)["void_reason"] == "permissionless_void",
       "permissionless void works once the staking deadline has passed")
+
+print("\n[B3] explicit two-round dispute lifecycle")
+cR = new_market(pages)
+as_(ALICE)
+GL.message.value = 500
+set_now(T0 + 10)
+cR.stake("YES")
+as_(BOB)
+GL.message.value = 300
+set_now(T0 + 11)
+cR.stake("NO")
+
+reset_net(pages, llm="YES")
+as_(STRANGER)
+set_now(STAKING_DL + 10)
+cR.resolve()
+r0 = state(cR)
+check(r0["status"] == "dispute_window"
+      and r0["outcome"] == "YES",
+      "initial YES opens dispute window")
+check(r0["dispute_round"] == 0,
+      "initial resolution leaves dispute_round at zero")
+r0_deadline = r0["dispute_deadline"]
+
+as_(ALICE)
+set_now(r0_deadline - 1)
+cR.dispute("Round 1: re-check both sources.")
+r1 = state(cR)
+check(r1["status"] == "disputed",
+      "round 1 accepted at deadline minus one")
+check(r1["dispute_round"] == 1,
+      "round 1 increments explicit counter")
+
+reset_net(pages, llm="YES")
+as_(STRANGER)
+set_now(r0_deadline)
+cR.resolve_dispute()
+r1_done = state(cR)
+check(r1_done["status"] == "dispute_resolved"
+      and r1_done["dispute_outcome"] == "UPHELD",
+      "round 1 resolved permissionlessly as UPHELD")
+check(r1_done["dispute_round"] == 1,
+      "resolving round 1 preserves counter")
+r1_deadline = r1_done["dispute_deadline"]
+
+as_(BOB)
+set_now(r1_deadline - 1)
+cR.dispute("Round 2: challenge the upheld result.")
+r2 = state(cR)
+check(r2["status"] == "disputed",
+      "round 2 accepted at deadline minus one")
+check(r2["dispute_round"] == 2,
+      "round 2 increments explicit counter to two")
+
+reset_net(pages, llm="NO")
+as_(STRANGER)
+set_now(r1_deadline)
+cR.resolve_dispute()
+r2_done = state(cR)
+check(r2_done["status"] == "dispute_resolved"
+      and r2_done["outcome"] == "NO"
+      and r2_done["dispute_outcome"] == "OVERTURNED",
+      "round 2 permissionlessly overturns YES to NO")
+check(r2_done["dispute_round"] == 2,
+      "resolving round 2 preserves counter at two")
+r2_deadline = r2_done["dispute_deadline"]
+
+as_(ALICE)
+set_now(r2_deadline - 1)
+expect_reject_message(
+    "third dispute hits exact limit",
+    "Dispute limit reached",
+    lambda: cR.dispute("Round 3 must be rejected."),
+)
+check(state(cR)["status"] == "dispute_resolved"
+      and state(cR)["dispute_round"] == 2,
+      "third dispute leaves state unchanged")
+
+as_(STRANGER)
+set_now(r2_deadline - 1)
+expect_reject(
+    "settle one second before final window closes",
+    lambda: cR.settle(),
+)
+set_now(r2_deadline)
+cR.settle()
+check(state(cR)["status"] == "settled"
+      and state(cR)["winning_side"] == "NO",
+      "settle succeeds exactly at final boundary")
 
 # summary ----------------------------------------------------------------------
 print("\n" + "=" * 72)

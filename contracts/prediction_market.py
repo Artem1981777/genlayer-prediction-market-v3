@@ -109,6 +109,7 @@ class PredictionMarketResolver(gl.Contract):
     rationale: str
     dispute_note: str
     dispute_outcome: str
+    dispute_round: u256
     winning_side: str
     settled_outcome: str
     positions: str
@@ -179,6 +180,7 @@ class PredictionMarketResolver(gl.Contract):
         self.rationale = ""
         self.dispute_note = ""
         self.dispute_outcome = ""
+        self.dispute_round = 0
         self.winning_side = ""
         self.settled_outcome = ""
         self.positions = "{}"
@@ -245,7 +247,7 @@ class PredictionMarketResolver(gl.Contract):
     @gl.public.view
     def get_state(self) -> dict:
         yes_pool, no_pool = self._pools()
-        return {"market_id": self.market_id, "creator": self.creator, "question": self.question, "rules": self.rules, "source1": self.source1, "source2": self.source2, "source3": self.source3, "binding1": self.binding1, "binding2": self.binding2, "binding3": self.binding3, "question_hash": self.question_hash, "rules_hash": self.rules_hash, "status": self.status, "outcome": self.outcome, "rationale": self.rationale, "dispute_note": self.dispute_note, "dispute_outcome": self.dispute_outcome, "winning_side": self.winning_side, "settled_outcome": self.settled_outcome, "staking_started": self.staking_started, "first_stake_time": self.first_stake_time, "sources_frozen": self.sources_frozen, "frozen_sources": self.frozen_sources, "frozen_config_hash": self.frozen_config_hash, "dispute_window_seconds": self.dispute_window_seconds, "resolve_time": self.resolve_time, "dispute_deadline": self.dispute_deadline, "void_reason": self.void_reason, "staking_deadline": self.staking_deadline, "final_deadline": self.final_deadline, "last_verified_count": self.last_verified_count, "last_verified_domains": self.last_verified_domains, "admissible_sources": self.admissible_sources, "yes_pool": yes_pool, "no_pool": no_pool, "total_pool": yes_pool + no_pool, "positions": self.positions, "claims": self.claims, "history": self.history}
+        return {"market_id": self.market_id, "creator": self.creator, "question": self.question, "rules": self.rules, "source1": self.source1, "source2": self.source2, "source3": self.source3, "binding1": self.binding1, "binding2": self.binding2, "binding3": self.binding3, "question_hash": self.question_hash, "rules_hash": self.rules_hash, "status": self.status, "outcome": self.outcome, "rationale": self.rationale, "dispute_note": self.dispute_note, "dispute_outcome": self.dispute_outcome, "dispute_round": self.dispute_round, "winning_side": self.winning_side, "settled_outcome": self.settled_outcome, "staking_started": self.staking_started, "first_stake_time": self.first_stake_time, "sources_frozen": self.sources_frozen, "frozen_sources": self.frozen_sources, "frozen_config_hash": self.frozen_config_hash, "dispute_window_seconds": self.dispute_window_seconds, "resolve_time": self.resolve_time, "dispute_deadline": self.dispute_deadline, "void_reason": self.void_reason, "staking_deadline": self.staking_deadline, "final_deadline": self.final_deadline, "last_verified_count": self.last_verified_count, "last_verified_domains": self.last_verified_domains, "admissible_sources": self.admissible_sources, "yes_pool": yes_pool, "no_pool": no_pool, "total_pool": yes_pool + no_pool, "positions": self.positions, "claims": self.claims, "history": self.history}
     @gl.public.view
     def verify_question(self, q: str) -> bool:
         return hashlib.sha256(q.encode("utf-8")).hexdigest() == self.question_hash
@@ -465,12 +467,8 @@ class PredictionMarketResolver(gl.Contract):
         caller = str(gl.message.sender_address)
         mine = self._positions().get(caller)
         assert isinstance(mine, dict) and (int(mine.get("YES", 0)) + int(mine.get("NO", 0))) > 0, "Only a participant who staked this market can dispute"
-        items = self._load_history()
-        disputes_so_far = 0
-        for it in items:
-            if isinstance(it, dict) and it.get("kind") == "dispute":
-                disputes_so_far += 1
-        assert disputes_so_far < 2, "Dispute limit reached for this market"
+        assert self.dispute_round < 2, "Dispute limit reached"
+        self.dispute_round = self.dispute_round + 1
         self.dispute_note = str(reason)
         self.status = "disputed"
         self._append_history("dispute", caller, str(reason))
