@@ -331,6 +331,8 @@ class PredictionMarketResolver(gl.Contract):
             )
 
             res = gl.nondet.exec_prompt(prompt)
+            if isinstance(res, dict):
+                res = json.dumps(res)
             fence = chr(96) * 3
             res = res.replace(
                 fence + "json", ""
