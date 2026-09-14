@@ -25,8 +25,8 @@ Covers the steward-review hardening:
       T2  config frozen at birth (no add_source exists at all)
       T6  binding excerpt absent from the page -> source EXCLUDED ->
           UNRESOLVED when nothing is admissible
-      T7  one source fails its binding, the other passes -> only the
-          admissible one counts
+      T7  one source fails its binding, the other passes -> deterministic
+          UNRESOLVED without an LLM call
       T8  leader/validator divergence on binding verification -> consensus
           failure, no state change, no money moves
 
@@ -81,22 +81,29 @@ class _Nondet:
         self.web = _Web()
 
     def exec_prompt(self, prompt):
-        # Deterministic mock model: the outcome follows from which sources
-        # the DETERMINISTIC binding check marked ADMISSIBLE in the prompt.
-        if "[ADMISSIBLE" in prompt:
-            ans = GL.llm_outcome
-            if callable(ans):
-                ans = ans(GL.current_view)
-        else:
-            ans = "UNRESOLVED"
+        # The contract itself decides whether the two-source gate permits
+        # an LLM call. Count calls so one-source tests can prove no call occurs.
+        GL.llm_calls += 1
+        ans = GL.llm_outcome
+        if callable(ans):
+            ans = ans(GL.current_view)
         return json.dumps({"outcome": str(ans)})
 
 
-def _outcome_of(raw):
+def _consensus_payload(raw):
     try:
-        return str(json.loads(raw).get("outcome", ""))
+        data = json.loads(raw)
+        sources = data.get("admissible_sources", [])
+        if not isinstance(sources, list):
+            sources = []
+        return (
+            str(data.get("outcome", "")).upper(),
+            int(data.get("verified", 0)),
+            int(data.get("domains", 0)),
+            tuple(str(u) for u in sources),
+        )
     except Exception:
-        return ""
+        return ("", 0, 0, ())
 
 
 class _EqPrinciple:
@@ -107,7 +114,7 @@ class _EqPrinciple:
         for vw in GL.validator_views:
             GL.current_view = vw
             try:
-                votes.append(_outcome_of(fn()) == _outcome_of(leader_raw))
+                votes.append(_consensus_payload(fn()) == _consensus_payload(leader_raw))
             except Exception:
                 votes.append(False)
         GL.current_view = None
@@ -179,6 +186,7 @@ class _Gl:
         self.current_view = None
         self.last_votes = None
         self.llm_outcome = "YES"
+        self.llm_calls = 0
 
 
 GL = _Gl()
@@ -217,6 +225,7 @@ def reset_net(pages, llm="YES"):
     GL.current_view = None
     GL.last_votes = None
     GL.llm_outcome = llm
+    GL.llm_calls = 0
 
 
 def new_market(pages=None, s1=URL1, s2=URL2, s3="", b1=BIND1, b2=BIND2, b3="",
@@ -348,6 +357,13 @@ check(st["status"] == "dispute_window" and st["outcome"] == "YES",
 check(st["resolve_time"] == STAKING_DL + 10
       and st["dispute_deadline"] == STAKING_DL + 10 + 600,
       "mandatory dispute window armed")
+check(st["last_verified_count"] == 2
+      and st["last_verified_domains"] == 2,
+      "two independently binding-verified sources recorded")
+check(json.loads(st["admissible_sources"]) == [URL1, URL2],
+      "ordered admissible source URLs recorded for evidence")
+check(GL.llm_calls == 4,
+      "leader and three validators independently invoked the LLM")
 
 # T6: binding absent -> EXCLUDED -> UNRESOLVED --------------------------------
 print("\n[T6] binding excerpt absent -> source excluded -> UNRESOLVED")
@@ -382,8 +398,15 @@ as_(STRANGER)
 set_now(STAKING_DL + 10)
 c7.resolve()
 st = state(c7)
-check(st["status"] == "dispute_window" and st["outcome"] == "NO",
-      "outcome derived only from the admissible source")
+check(st["status"] == "open" and st["outcome"] == "UNRESOLVED",
+      "one-source fallback is deterministically UNRESOLVED")
+check(st["last_verified_count"] == 1
+      and st["last_verified_domains"] == 1,
+      "one verified source and one domain recorded")
+check(json.loads(st["admissible_sources"]) == [URL2],
+      "only the binding-verified source is recorded")
+check(GL.llm_calls == 0,
+      "LLM is not called below the two-source threshold")
 
 # T8: leader/validator divergence -> consensus failure ------------------------
 print("\n[T8] binding divergence between nodes -> consensus failure, no state change")
