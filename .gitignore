@@ -3,3 +3,6 @@ node_modules/
 *.log
 *.bak_*
 patch-*.mjs
+
+__pycache__/
+*.py[cod]
