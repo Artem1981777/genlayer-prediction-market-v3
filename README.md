@@ -4,7 +4,7 @@ A GenLayer Intelligent Contract that runs a full prediction-market lifecycle -- 
 
 This repository is a **standalone resubmission** that directly and fully addresses the steward's review of the `void()` lifecycle (see the section below and `docs/REVIEW-RESPONSE.md`).
 
-- **Live site:** https://artem1981777.github.io/genlayer-prediction-market-v2/
+- **Live site:** https://artem1981777.github.io/genlayer-prediction-market-v3/
 - **Chain:** GenLayer Testnet Bradbury (Chain ID 4221)
 - **Contract:** `contracts/prediction_market.py`
 - **Primary proof:** offline consensus simulation `sim_market.py` -- **57/57** checks pass (includes the `void()` phase-gate test, T19)
@@ -46,8 +46,8 @@ Every consensus-critical decision is computed and stored on-chain by the contrac
 
 ## Verify (no keys needed)
 
-    git clone https://github.com/Artem1981777/genlayer-prediction-market-v2
-    cd genlayer-prediction-market-v2
+    git clone https://github.com/Artem1981777/genlayer-prediction-market-v3
+    cd genlayer-prediction-market-v3
     python3 sim_market.py        # expect: 57/57
 
 `sim_market.py` is a self-contained, deterministic simulation of the contract's consensus and lifecycle logic (staking, dispute, settle, finalize, refund, and the void phase-gate). It needs only Python 3.

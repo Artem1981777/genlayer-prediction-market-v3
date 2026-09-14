@@ -26,8 +26,8 @@ void() remains permissionless (no sender check) but is now phase-gated. While st
 
 ## How to reproduce (no keys, no network)
 
-    git clone https://github.com/Artem1981777/genlayer-prediction-market-v2
-    cd genlayer-prediction-market-v2
+    git clone https://github.com/Artem1981777/genlayer-prediction-market-v3
+    cd genlayer-prediction-market-v3
     python3 sim_market.py
 
 Expected output: 57/57 checks pass. T19 specifically asserts:

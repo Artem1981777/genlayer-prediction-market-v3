@@ -19,8 +19,8 @@ So a funded, still-open market can no longer be cancelled before its staking dea
 
 ## Proof (reproducible, no keys)
 
-    git clone https://github.com/Artem1981777/genlayer-prediction-market-v2
-    cd genlayer-prediction-market-v2
+    git clone https://github.com/Artem1981777/genlayer-prediction-market-v3
+    cd genlayer-prediction-market-v3
     python3 sim_market.py
 
 Expected: 57/57. sim_market.py T19 asserts both the pre-deadline revert and the post-deadline refund path.
