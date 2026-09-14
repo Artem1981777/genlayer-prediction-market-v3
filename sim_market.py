@@ -15,7 +15,7 @@ Covers the steward-review hardening:
       T11 settle by a stranger after the window -> works
       T16 finalize by a stranger after final_deadline (unresolved) -> void + 1:1 refunds
       T15 finalize with a definite outcome + closed window -> settle, winners paid
-      T17 finalize with an open dispute window -> fail-safe void + refunds
+      T17 finalize during an active dispute process -> revert without state loss
       T18 void (permissionless) of an unresolved market
       T19 void phase gate: early void while still open (pre-deadline) is
           rejected; permissionless void works after the staking deadline
@@ -277,6 +277,8 @@ expect_reject("staking deadline in the past rejected",
               lambda: new_market(sd=T0 - 1))
 expect_reject("final deadline before staking deadline rejected",
               lambda: new_market(fd=STAKING_DL - 1))
+expect_reject("final deadline shorter than full dispute lifecycle rejected",
+              lambda: new_market(fd=STAKING_DL + 3 * 600 - 1))
 expect_reject("empty question rejected",
               lambda: new_market(q="  "))
 expect_reject("zero dispute window rejected",
@@ -514,7 +516,7 @@ reset_net(pages, llm="YES")
 as_(STRANGER)
 set_now(STAKING_DL + 10)
 cF.resolve()
-set_now(FINAL_DL + 5)
+set_now(FINAL_DL)
 cF.finalize()
 st = state(cF)
 check(st["status"] == "settled" and st["winning_side"] == "YES",
@@ -532,7 +534,7 @@ reset_net({"url": "x"}, llm="YES")  # nothing admissible
 as_(STRANGER)
 set_now(STAKING_DL + 10)
 cG.resolve()   # UNRESOLVED -> stays open
-set_now(FINAL_DL + 5)
+set_now(FINAL_DL)
 cG.finalize()
 st = state(cG)
 check(st["status"] == "voided" and st["void_reason"] == "deadline_void",
@@ -540,23 +542,60 @@ check(st["status"] == "voided" and st["void_reason"] == "deadline_void",
 as_(ALICE)
 check(cG.refund() == 250, "staker refunds 1:1 after deadline_void")
 
-print("\n[T17] finalize with definite outcome but OPEN dispute window -> fail-safe void")
-cI = new_market(pages, sd=FINAL_DL - 100, fd=FINAL_DL + 100)
+print("\n[T17] finalize cannot bypass an active dispute process")
+cI = new_market(pages)
 as_(ALICE)
 GL.message.value = 600
-set_now(FINAL_DL - 200)
+set_now(T0 + 10)
 cI.stake("YES")
+
+# Resolution is deliberately delayed until final_deadline. The constructor
+# invariant is valid, but this newly opened configured window is still active.
 reset_net(pages, llm="YES")
 as_(STRANGER)
-set_now(FINAL_DL - 50)
-cI.resolve()   # YES, window closes at FINAL_DL-50+600 = FINAL_DL+550
-set_now(FINAL_DL + 150)   # final_deadline passed, dispute window still open
-cI.finalize()
-stI = state(cI)
-check(stI["status"] == "voided" and stI["void_reason"] == "deadline_void",
-      "window still open at final deadline -> fail-safe void (no lock, no misallocation)")
+set_now(FINAL_DL)
+cI.resolve()
+check(state(cI)["status"] == "dispute_window",
+      "late permissionless resolution opens its full initial window")
+expect_reject(
+    "finalize at final_deadline reverts while initial window is active",
+    lambda: cI.finalize(),
+)
+check(state(cI)["status"] == "dispute_window",
+      "blocked finalize leaves the resolved market unchanged")
+
+# A participant submits a dispute. Even after the old window timestamp,
+# finalize must not erase status=disputed; resolve_dispute is permissionless.
 as_(ALICE)
-check(cI.refund() == 600, "refund 1:1 after fail-safe finalize")
+set_now(FINAL_DL + 1)
+cI.dispute("Review both binding-verified sources again.")
+check(state(cI)["status"] == "disputed",
+      "participant opened an active dispute")
+as_(STRANGER)
+set_now(FINAL_DL + 601)
+expect_reject(
+    "finalize reverts while status is disputed",
+    lambda: cI.finalize(),
+)
+expect_reject(
+    "void reverts while status is disputed",
+    lambda: cI.void(),
+)
+check(state(cI)["status"] == "disputed",
+      "active dispute survives finalize and void attempts")
+
+# No lock: any account resolves the dispute, waits for the new window boundary,
+# and finalizes permissionlessly.
+reset_net(pages, llm="YES")
+as_(STRANGER)
+set_now(FINAL_DL + 602)
+cI.resolve_dispute()
+check(state(cI)["status"] == "dispute_resolved",
+      "stranger advanced the disputed market permissionlessly")
+set_now(state(cI)["dispute_deadline"])
+cI.finalize()
+check(state(cI)["status"] == "settled",
+      "finalize settles exactly when the post-dispute window closes")
 
 # T18: permissionless void ------------------------------------------------------
 print("\n[T18] permissionless void of an unresolved market")

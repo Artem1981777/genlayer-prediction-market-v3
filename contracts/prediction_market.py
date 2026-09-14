@@ -161,6 +161,7 @@ class PredictionMarketResolver(gl.Contract):
         fd = int(final_deadline)
         assert sd > now, "Staking deadline must be in the future"
         assert fd > sd, "Final deadline must be after the staking deadline"
+        assert fd >= sd + 3 * w, "final_deadline must leave room for the full dispute process (>= staking_deadline + 3*dispute_window)"
         self.market_id = str(market_id).strip() or "market-1"
         self.creator = str(gl.message.sender_address)
         self.question = q
@@ -524,6 +525,7 @@ class PredictionMarketResolver(gl.Contract):
         # YES/NO outcome) may be voided by ANY account so refunds open.
         # It can never misallocate funds: void only ever returns stakes 1:1.
         caller = str(gl.message.sender_address)
+        assert self.status != "disputed", "Cannot void while a dispute is active"
         assert self.status in ("open", "dispute_window", "dispute_resolved"), "Can only void a market that has not settled"
         assert self.outcome in ("", "UNRESOLVED"), "Cannot void a market with a definite YES/NO outcome; settle it instead"
         # PHASE GATE (steward Sep 9): void stays permissionless (no sender check),
@@ -541,27 +543,55 @@ class PredictionMarketResolver(gl.Contract):
         self._append_history("void", caller, "permissionless void of an unresolved market")
     @gl.public.write
     def finalize(self):
-        # PERMISSIONLESS HARD DEADLINE EXIT (steward point 1): after
-        # final_deadline, ANY account can always finish the market, so
-        # funds can never stay locked regardless of what anyone does.
-        #   - a definite outcome that survived its dispute window -> settle
-        #     (winners are paid);
-        #   - anything else -> void with refunds open for everyone (fail-safe).
+        # Permissionless deadline exit, but never at the expense of an active
+        # configured dispute process. A submitted dispute is advanced through
+        # permissionless resolve_dispute(); nobody can hold the market hostage.
         caller = str(gl.message.sender_address)
         now = _chain_now()
+
         assert now >= self.final_deadline, "Final deadline has not passed yet"
         assert self.status not in ("settled", "voided"), "Market already finalized"
-        if (self.outcome in ("YES", "NO")
-                and self.status in ("dispute_window", "dispute_resolved")
-                and now >= self.dispute_deadline):
+
+        dispute_active = (
+            self.status == "disputed"
+            or (
+                self.status in ("dispute_window", "dispute_resolved")
+                and now < self.dispute_deadline
+            )
+        )
+
+        assert not dispute_active, "dispute process still active: finalize unlocks after the dispute window closes / dispute is resolved"
+
+        if (
+            self.status in ("dispute_window", "dispute_resolved")
+            and self.outcome in ("YES", "NO")
+        ):
             self._settle_common(caller)
-            self._append_history("finalize", caller, "final deadline reached: settled by permissionless finalize, winners paid")
+            self._append_history(
+                "finalize",
+                caller,
+                "final deadline reached after dispute process closed: "
+                "settled by permissionless finalize",
+            )
             return
+
+        # No successful definite resolution, or an inactive closed process
+        # ended UNRESOLVED: preserve the deadline refund path.
+        assert self.status in (
+            "open", "dispute_window", "dispute_resolved"
+        ), "Market cannot be finalized from its current phase"
+
         self.winning_side = ""
         self.void_reason = "deadline_void"
         self.status = "voided"
         self.claims = "{}"
-        self._append_history("finalize", caller, "final deadline reached: market voided by permissionless finalize, refunds open 1:1")
+        self._append_history(
+            "finalize",
+            caller,
+            "final deadline reached with no active dispute and no definite "
+            "settleable outcome: refunds open 1:1",
+        )
+
     @gl.public.write
     def claim(self) -> int:
         assert self.status == "settled", "Market is not settled yet"
