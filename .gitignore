@@ -6,3 +6,7 @@ patch-*.mjs
 
 __pycache__/
 *.py[cod]
+.venv/
+.venv-ubuntu/
+.pytest_cache/
+artifacts/
