@@ -33,9 +33,9 @@ cd genlayer-prediction-market-v3
 python3 sim_market.py
 ```
 
-Expected result after this change: **87/87 checks pass**. The simulation has no network or API-key dependency and loads the real contract source.
+Expected result after this change: **93/93 checks pass**. The simulation has no network or API-key dependency and loads the real contract source.
 
-The expanded suite contains **25 pytest test functions**. Installing the pinned requirements succeeds on Python 3.12, but the direct runner then requests the unavailable `genvm` asset `v0.3.0-rc7/genvm-universal.tar.xz` and receives HTTP 404 before assertions execute. This is recorded, with the exact reproduction and workaround, in [`docs/KNOWN-ISSUES.md`](KNOWN-ISSUES.md). The authoritative no-network proof is the 87-check simulator.
+The expanded suite contains **25 pytest test functions**. Installing the pinned requirements succeeds on Python 3.12, but the direct runner then requests the unavailable `genvm` asset `v0.3.0-rc7/genvm-universal.tar.xz` and receives HTTP 404 before assertions execute. This is recorded, with the exact reproduction and workaround, in [`docs/KNOWN-ISSUES.md`](KNOWN-ISSUES.md). The authoritative no-network proof is the 93-check simulator, including T17b for every active dispute phase.
 
 ## CI proof
 

@@ -18,7 +18,7 @@ Proof is provided by `sim_market.py` T6/T7 and `tests/test_sources.py::test_one_
 
 In [`contracts/prediction_market.py`](../contracts/prediction_market.py), `finalize()` checks `status == "disputed"` and checks whether `dispute_window` or `dispute_resolved` remains before `dispute_deadline` (lines 555–563). It asserts `not dispute_active` at line 563 before either settlement or deadline void. This preserves the configured dispute process even if the final deadline has arrived. Once the active process is resolved and its current window closes, permissionless `finalize()` can settle a definite result or void an unresolved market.
 
-Proof is provided by `sim_market.py` T17, `tests/test_finalize_boundaries.py::test_finalize_rejects_disputed_status`, and `tests/test_finalize_boundaries.py::test_finalize_settles_yes`. The exact `deadline - 1` and `deadline` settlement boundaries are covered by `sim_market.py` B3 and the finalization boundary tests.
+Proof is provided by `sim_market.py` T17/T17b, `tests/test_finalize_boundaries.py::test_finalize_rejects_disputed_status`, and `tests/test_finalize_boundaries.py::test_finalize_settles_yes`. T17b checks `finalize()` at `final_deadline` during a submitted round-one dispute and a submitted round-two dispute, then checks that ordinary `settle()` is rejected one second before the completed post-round window closes and that `finalize()` settles at the later final deadline. The exact `deadline - 1` and `deadline` settlement boundaries are also covered by `sim_market.py` B3 and the finalization boundary tests.
 
 ## Additional requested coverage
 
@@ -30,6 +30,7 @@ Proof is provided by `sim_market.py` T17, `tests/test_finalize_boundaries.py::te
 | Stripped question/rules hashes and deterministic frozen config hash | `tests/test_init_invariants.py::test_hashes_strip_input_and_config_hash_is_deterministic` |
 | Non-staker dispute rejection | `tests/test_security_boundaries.py::test_non_staker_cannot_dispute` |
 | Hostile LLM/disputant-context defense | `tests/test_security_boundaries.py::test_prompt_injection_context_cannot_bypass_binding_gate`, simulator T10b |
+| Finalize blocked in initial, round-one, and round-two active dispute phases | simulator T17/T17b |
 | `void()` at staking deadline minus one and exactly at deadline | `tests/test_void_boundaries.py::test_void_before_and_at_staking_deadline`, simulator T19 |
 | `void()` for unresolved dispute phases and definite `YES/NO` rejection | `tests/test_void_boundaries.py::test_void_unresolved_dispute_phases_and_rejects_definite_outcome` |
 | Two runner issues and real workarounds | [`docs/KNOWN-ISSUES.md`](KNOWN-ISSUES.md) |
@@ -39,7 +40,7 @@ Proof is provided by `sim_market.py` T17, `tests/test_finalize_boundaries.py::te
 The deterministic simulator loads the real contract source and completes without network access:
 
 ```text
-CHECKS: 87  PASSED: 87  FAILED: 0
+CHECKS: 93  PASSED: 93  FAILED: 0
 ```
 
 The source-level pytest suite contains **25 test functions**. Direct GenLayer tests require the pinned `genlayer-test==0.29.2` environment; the clock synchronization workaround is in `tests/conftest.py`. The pydantic-core wheel issue is conditional on interpreter/platform and does not reproduce on the verified Python 3.12 Linux x86_64 target.

@@ -35,7 +35,7 @@ finalize() is the permissionless deadline exit, but it refuses to run while a di
     cd genlayer-prediction-market-v3
     python3 sim_market.py
 
-Expected: 86/86 checks pass. The gltest Direct-Mode suite under tests/ exercises the same behavior against the GenLayer runtime; sim_market.py is the self-contained proof that runs anywhere.
+Expected: 93/93 checks pass. The gltest Direct-Mode suite under tests/ exercises the same behavior against the GenLayer runtime when the pinned genvm asset is available; sim_market.py is the self-contained proof that runs anywhere. The simulator now explicitly checks `finalize()` during the initial window, round-one dispute, round-two dispute, and the post-dispute final-deadline path.
 
 ## On-chain note
 The contract is not yet redeployed on Bradbury because the testnet is currently not activating deploy transactions (deploys time out without activation). The reproducible simulation is the primary proof; the contract will be redeployed once testnet deploy activation recovers.

@@ -629,6 +629,58 @@ cI.finalize()
 check(state(cI)["status"] == "settled",
       "finalize settles exactly when the post-dispute window closes")
 
+# T17b: final_deadline cannot bypass any active dispute phase ---------------
+print("\n[T17b] finalize is blocked in every active dispute phase")
+cJ = new_market(pages)
+as_(ALICE)
+GL.message.value = 200
+set_now(T0 + 10)
+cJ.stake("YES")
+reset_net(pages, llm="YES")
+as_(STRANGER)
+set_now(STAKING_DL + 10)
+cJ.resolve()
+initial_deadline = state(cJ)["dispute_deadline"]
+as_(ALICE)
+set_now(initial_deadline - 1)
+cJ.dispute("Initial window boundary challenge.")
+as_(STRANGER)
+set_now(FINAL_DL)
+expect_reject(
+    "finalize at final_deadline reverts during round one dispute",
+    lambda: cJ.finalize(),
+)
+check(state(cJ)["status"] == "disputed",
+      "round one dispute remains active at final_deadline")
+reset_net(pages, llm="YES")
+set_now(initial_deadline)
+cJ.resolve_dispute()
+round_one_deadline = state(cJ)["dispute_deadline"]
+as_(ALICE)
+set_now(round_one_deadline - 1)
+cJ.dispute("Second round boundary challenge.")
+as_(STRANGER)
+set_now(FINAL_DL)
+expect_reject(
+    "finalize at final_deadline reverts during round two dispute",
+    lambda: cJ.finalize(),
+)
+check(state(cJ)["status"] == "disputed" and state(cJ)["dispute_round"] == 2,
+      "round two dispute remains active at final_deadline")
+reset_net(pages, llm="YES")
+set_now(round_one_deadline)
+cJ.resolve_dispute()
+round_two_deadline = state(cJ)["dispute_deadline"]
+set_now(round_two_deadline - 1)
+expect_reject(
+    "settle one second before completed dispute window closes",
+    lambda: cJ.settle(),
+)
+set_now(FINAL_DL)
+cJ.finalize()
+check(state(cJ)["status"] == "settled",
+      "finalize settles after both dispute rounds and the final deadline")
+
 # T18: permissionless void ------------------------------------------------------
 print("\n[T18] permissionless void of an unresolved market")
 cV = new_market(pages)
@@ -773,4 +825,4 @@ if failed:
     for label in failed:
         print("  - " + label)
     sys.exit(1)
-print("ALL CHECKS PASSED — 87/87 checks: permissionless lifecycle + bound sources verified.")
+print("ALL CHECKS PASSED — 93/93 checks: permissionless lifecycle + bound sources verified.")
