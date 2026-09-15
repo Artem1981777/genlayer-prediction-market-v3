@@ -31,6 +31,8 @@ Proof is provided by `sim_market.py` T17/T17b, `tests/test_finalize_boundaries.p
 | Non-staker dispute rejection | `tests/test_security_boundaries.py::test_non_staker_cannot_dispute` |
 | Hostile LLM/disputant-context defense | `tests/test_security_boundaries.py::test_prompt_injection_context_cannot_bypass_binding_gate`, simulator T10b |
 | Finalize blocked in initial, round-one, and round-two active dispute phases | simulator T17/T17b |
+| Three declared sources with exactly two admissible, and conflicting admissible sources | simulator T7b/T7c |
+| Repeated `finalize()` after settlement or deadline void | simulator T15/T16 |
 | `void()` at staking deadline minus one and exactly at deadline | `tests/test_void_boundaries.py::test_void_before_and_at_staking_deadline`, simulator T19 |
 | `void()` for unresolved dispute phases and definite `YES/NO` rejection | `tests/test_void_boundaries.py::test_void_unresolved_dispute_phases_and_rejects_definite_outcome` |
 | Two runner issues and real workarounds | [`docs/KNOWN-ISSUES.md`](KNOWN-ISSUES.md) |
@@ -40,7 +42,7 @@ Proof is provided by `sim_market.py` T17/T17b, `tests/test_finalize_boundaries.p
 The deterministic simulator loads the real contract source and completes without network access:
 
 ```text
-CHECKS: 93  PASSED: 93  FAILED: 0
+CHECKS: 101  PASSED: 101  FAILED: 0
 ```
 
 The source-level pytest suite contains **25 test functions**. Direct GenLayer tests require the pinned `genlayer-test==0.29.2` environment; the clock synchronization workaround is in `tests/conftest.py`. The pydantic-core wheel issue is conditional on interpreter/platform and does not reproduce on the verified Python 3.12 Linux x86_64 target.

@@ -7,7 +7,7 @@ This repository is a **standalone resubmission** that directly and fully address
 - **Live site:** https://artem1981777.github.io/genlayer-prediction-market-v3/
 - **Chain:** GenLayer Testnet Bradbury (Chain ID 4221)
 - **Contract:** `contracts/prediction_market.py`
-- **Primary proof:** offline consensus simulation `sim_market.py` -- **93/93** checks pass (includes the `void()` phase-gate test, T19, hostile-context defense, T10b, and active-dispute finalization checks, T17b)
+- **Primary proof:** offline consensus simulation `sim_market.py` -- **101/101** checks pass (includes zero/one/two-source quorum, three-source fallback, conflict handling, repeated-finalize safety, the `void()` phase-gate test, hostile-context defense, and active-dispute finalization checks)
 
 ## Steward review -- what changed (Sep 9 follow-up)
 
@@ -48,7 +48,7 @@ Every consensus-critical decision is computed and stored on-chain by the contrac
 
     git clone https://github.com/Artem1981777/genlayer-prediction-market-v3
     cd genlayer-prediction-market-v3
-    python3 sim_market.py        # expect: 93/93
+    python3 sim_market.py        # expect: 101/101
 
 `sim_market.py` is a self-contained, deterministic simulation of the contract's consensus and lifecycle logic (staking, dispute, settle, finalize, refund, source quorum, hostile-context defense, and the void phase-gate). It needs only Python 3.
 

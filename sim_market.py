@@ -50,8 +50,10 @@ STRANGER = "0x" + "dd" * 20       # nobody special: proves permissionless
 URL1 = "https://en.wikipedia.org/wiki/The_Merge"
 URL1B = "https://en.m.wikipedia.org/wiki/The_Merge"   # same registrable host page
 URL2 = "https://ethereum.org/en/roadmap/merge"
+URL3 = "https://research.example/merge"
 BIND1 = "Ethereum completed its transition to proof-of-stake"
 BIND2 = "The Merge was the moment Ethereum moved to proof-of-stake"
+BIND3 = "Ethereum Merge research confirms proof-of-stake"
 
 NOW_ISO = "2026-09-07T12:00:00.000Z"
 T0 = int(datetime(2026, 9, 7, 12, 0, 0, tzinfo=timezone.utc).timestamp())
@@ -418,6 +420,47 @@ check(json.loads(st["admissible_sources"]) == [URL2],
 check(GL.llm_calls == 0,
       "LLM is not called below the two-source threshold")
 
+# T7b: three declared sources, exactly two admissible -------------------------
+print("\n[T7b] three sources with exactly two binding-verified")
+c7b = new_market(pages={}, s3=URL3, b3=BIND3)
+as_(ALICE)
+GL.message.value = 1000
+set_now(T0 + 10)
+c7b.stake("YES")
+reset_net({
+    URL1: "Ethereum " + BIND1,
+    URL2: "Roadmap: " + BIND2,
+}, llm="YES")
+as_(STRANGER)
+set_now(STAKING_DL + 10)
+c7b.resolve()
+st = state(c7b)
+check(st["status"] == "dispute_window" and st["outcome"] == "YES",
+      "exactly two of three binding-verified sources permit YES")
+check(st["last_verified_count"] == 2
+      and json.loads(st["admissible_sources"]) == [URL1, URL2],
+      "failed third source is excluded from the admissible evidence")
+
+# T7c: conflicting admissible evidence stays safely unresolved ----------------
+print("\n[T7c] conflicting admissible sources remain UNRESOLVED")
+c7c = new_market(pages={})
+as_(ALICE)
+GL.message.value = 1000
+set_now(T0 + 10)
+c7c.stake("YES")
+reset_net({
+    URL1: "Ethereum " + BIND1 + " and the event is confirmed.",
+    URL2: "Roadmap: " + BIND2 + " but the event is not confirmed.",
+}, llm="UNRESOLVED")
+as_(STRANGER)
+set_now(STAKING_DL + 10)
+c7c.resolve()
+st = state(c7c)
+check(st["status"] == "open" and st["outcome"] == "UNRESOLVED",
+      "conflicting admissible evidence does not produce a definite outcome")
+check(st["last_verified_count"] == 2 and st["last_verified_domains"] == 2,
+      "conflict test counts only the two binding-verified sources")
+
 # T8: leader/validator divergence -> consensus failure ------------------------
 print("\n[T8] binding divergence between nodes -> consensus failure, no state change")
 c8 = new_market(pages={})
@@ -555,6 +598,9 @@ check(st["status"] == "settled" and st["winning_side"] == "YES",
       "finalize settled the market, winners paid")
 as_(ALICE)
 check(cF.claim() == 400, "winner claims after finalize")
+expect_reject("repeated finalize after settlement rejected", lambda: cF.finalize())
+check(state(cF)["status"] == "settled" and state(cF)["outcome"] == "YES",
+      "repeated finalize leaves settled outcome unchanged")
 
 print("\n[T16] finalize with unresolved market -> deadline_void -> 1:1 refunds by a stranger path")
 cG = new_market(pages={})
@@ -573,6 +619,9 @@ check(st["status"] == "voided" and st["void_reason"] == "deadline_void",
       "deadline_void: unresolved market voided at the final deadline")
 as_(ALICE)
 check(cG.refund() == 250, "staker refunds 1:1 after deadline_void")
+expect_reject("repeated finalize after deadline void rejected", lambda: cG.finalize())
+check(state(cG)["status"] == "voided" and state(cG)["outcome"] == "UNRESOLVED",
+      "repeated finalize leaves unresolved void state unchanged")
 
 print("\n[T17] finalize cannot bypass an active dispute process")
 cI = new_market(pages)
@@ -825,4 +874,4 @@ if failed:
     for label in failed:
         print("  - " + label)
     sys.exit(1)
-print("ALL CHECKS PASSED — 93/93 checks: permissionless lifecycle + bound sources verified.")
+print("ALL CHECKS PASSED — 101/101 checks: permissionless lifecycle + bound sources verified.")
