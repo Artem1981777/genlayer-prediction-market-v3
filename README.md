@@ -8,7 +8,9 @@ This repository is the v3 evidence repository for the steward review and EditRes
 - **Chain:** GenLayer Testnet Bradbury (Chain ID 4221)
 - **Contract:** `contracts/prediction_market.py`
 - **Evidence response:** [`docs/REVIEW-RESPONSE-2.md`](docs/REVIEW-RESPONSE-2.md)
-- **Latest commit:** `95bdfa743623645a2635bb1fd1c750e4282a9950`
+- **Final technical report:** [`docs/FINAL-REPORT.md`](docs/FINAL-REPORT.md)
+- **Final response text:** [`docs/FINAL-RESPONSE.md`](docs/FINAL-RESPONSE.md)
+- **Latest commit:** `930e8af1bde1d9781f6169220ecba3de325d128d`
 - **Primary proof:** offline consensus simulation — **101/101 checks pass**
 - **Latest green CI:** [GitHub Actions run 34980827937](https://github.com/Artem1981777/genlayer-prediction-market-v3/actions/runs/34980827937)
 
