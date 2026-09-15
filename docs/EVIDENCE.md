@@ -1,39 +1,31 @@
-# Evidence -- GenLayer Prediction Market Resolver
+# Evidence — GenLayer Prediction Market Resolver
 
-This document maps the steward's concern to the exact fix, source location, and reproducible test.
+Maps the steward's Sep 14 request to the exact contract logic and reproducible tests.
 
-## Claim addressed (Sep 9 follow-up, Pavel Kolosov)
+## Request addressed (Sep 14, Pavel Kolosov)
+1. A definite YES/NO requires at least two independently binding-verified sources.
+2. The final deadline cannot void a market while its dispute process is still active.
+3. Source-level tests for one-source fallback, the initial dispute window, both dispute rounds, and finalization at deadline boundaries.
 
-"Any account can call void() while a funded market is open, even before the staking deadline, and cancel it before resolution."
+## Mapping
 
-## Fix
+| Requirement | Contract location | Behavior | Proof |
+|---|---|---|---|
+| >=2 independent verified sources for a definite outcome | _resolve_now() (`verified_count < 2 or domain_count < 2`) | Forced UNRESOLVED, LLM not called | sim T7; tests/test_sources.py::test_one_source_fallback |
+| >=2 sources from >=2 domains at creation | __init__ | Creation reverts otherwise | sim T1; tests/test_init_invariants.py |
+| Final deadline never voids an active dispute | finalize() (`assert not dispute_active`) | Reverts while disputed / window open | sim T17; tests/test_finalize_boundaries.py |
+| void() blocked during dispute | void() ("Cannot void while a dispute is active") | Reverts | sim T17 |
+| Initial dispute window armed on resolution | resolve() (sets dispute_deadline) | status -> dispute_window | sim T5; tests/test_dispute_lifecycle.py |
+| Exactly two dispute rounds | dispute() (`dispute_round < 2`) | Third dispute rejected | sim B3; tests/test_dispute_lifecycle.py |
+| Finalization at deadline boundaries | finalize()/settle() | settle-or-void at final_deadline | sim T14–T17; tests/test_finalize_boundaries.py |
 
-void() remains permissionless (no sender check) but is now phase-gated. While status == "open", void() reverts until staking_deadline passes:
-
-    market still open for staking, cannot void before staking_deadline
-
-- Post-deadline voids (unresolved market after staking_deadline): unchanged, open 1:1 refunds.
-- Dispute-phase voids: unchanged.
-- Decided market (definite YES/NO): can never be voided.
-
-## Where
-
-| Item | Location |
-|---|---|
-| Contract method | contracts/prediction_market.py -> void() |
-| Guard message | market still open for staking, cannot void before staking_deadline |
-| Simulation | sim_market.py -> T19 |
-
-## How to reproduce (no keys, no network)
+## Reproduce (no keys, no network)
 
     git clone https://github.com/Artem1981777/genlayer-prediction-market-v3
     cd genlayer-prediction-market-v3
     python3 sim_market.py
 
-Expected output: 57/57 checks pass. T19 specifically asserts:
-1. A void() call while the market is still open for staking (now < staking_deadline) reverts with the guard message.
-2. A void() call on an unresolved market after staking_deadline succeeds and opens 1:1 refunds.
+Expected output: 86/86 checks pass.
 
 ## On-chain status
-
-The gated contract is not yet deployed on Bradbury (testnet is not activating deploy transactions; submitted deploys time out without activation). The reproducible simulation above is the primary, self-contained proof. The gated version will be redeployed once testnet deploy activation recovers. No pre-fix contract is linked, to avoid pointing anyone at pre-fix behavior.
+Not yet redeployed on Bradbury (testnet deploy activation is timing out). The simulation is the self-contained primary proof; redeploy will follow once activation recovers.

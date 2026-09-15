@@ -7,7 +7,7 @@ This repository is a **standalone resubmission** that directly and fully address
 - **Live site:** https://artem1981777.github.io/genlayer-prediction-market-v3/
 - **Chain:** GenLayer Testnet Bradbury (Chain ID 4221)
 - **Contract:** `contracts/prediction_market.py`
-- **Primary proof:** offline consensus simulation `sim_market.py` -- **57/57** checks pass (includes the `void()` phase-gate test, T19)
+- **Primary proof:** offline consensus simulation `sim_market.py` -- **86/86** checks pass (includes the `void()` phase-gate test, T19)
 
 ## Steward review -- what changed (Sep 9 follow-up)
 
@@ -26,7 +26,7 @@ Post-deadline voids (an unresolved market after `staking_deadline`) and dispute-
 
 - Source: `contracts/prediction_market.py` -- see `void()` and the guard string above.
 - Test: `sim_market.py` T19 -- a pre-deadline `void()` reverts; a post-deadline `void()` on an unresolved market opens 1:1 refunds.
-- Reproduce: `python3 sim_market.py` -> `57/57`.
+- Reproduce: `python3 sim_market.py` -> `86/86`.
 - Full write-up: `docs/REVIEW-RESPONSE.md` and `docs/EVIDENCE.md`.
 
 ## Contract lifecycle
@@ -48,7 +48,7 @@ Every consensus-critical decision is computed and stored on-chain by the contrac
 
     git clone https://github.com/Artem1981777/genlayer-prediction-market-v3
     cd genlayer-prediction-market-v3
-    python3 sim_market.py        # expect: 57/57
+    python3 sim_market.py        # expect: 86/86
 
 `sim_market.py` is a self-contained, deterministic simulation of the contract's consensus and lifecycle logic (staking, dispute, settle, finalize, refund, and the void phase-gate). It needs only Python 3.
 
@@ -67,7 +67,7 @@ Deploy tooling is included for when the testnet recovers:
 
     index.html                       # static live-site overview (GitHub Pages)
     contracts/prediction_market.py   # the Intelligent Contract (phase-gated void)
-    sim_market.py                    # offline consensus simulation (57/57)
+    sim_market.py                    # offline consensus simulation (86/86)
     deploy.mjs / common.mjs          # deploy tooling (Bradbury)
     rpc-relay.mjs / rpc-relay.html   # browser RPC relay helper
     test.mjs / test-payable.mjs      # on-chain lifecycle tests (need a funded key)
