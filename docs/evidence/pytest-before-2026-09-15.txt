@@ -1,0 +1,181 @@
+WARNING: File `gltest.config.yaml` not found in the current directory, using default config, create a `gltest.config.yaml` file to manage multiple networks
+INFO: Clearing artifacts directory: artifacts
+INFO: Using the following configuration:
+INFO:   RPC URL: http://127.0.0.1:4000/api
+INFO:   Selected Network: localnet
+INFO:   Available networks: ['localnet', 'studionet', 'testnet_asimov', 'testnet_bradbury']
+INFO:   Selected chain type: localnet
+INFO:   Available chains: localnet, studionet, testnet_asimov, testnet_bradbury
+INFO:   Contracts directory: contracts
+INFO:   Artifacts directory: artifacts
+INFO:   Environment: .env
+INFO:   Default wait interval: 3000 ms
+INFO:   Default wait retries: 50
+INFO:   Leader only mode: False
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.1.1, pluggy-1.6.0 -- /root/genlayer/genlayer-prediction-market-v3/.venv314/bin/python
+rootdir: /root/genlayer/genlayer-prediction-market-v3
+configfile: pytest.ini
+plugins: genlayer-test-0.29.2
+collecting ... collected 16 items
+
+tests/test_dispute_lifecycle.py::test_initial_dispute_boundaries FAILED  [  6%]
+tests/test_dispute_lifecycle.py::test_two_dispute_rounds FAILED          [ 12%]
+tests/test_finalize_boundaries.py::test_finalize_open_market_boundaries FAILED [ 18%]
+tests/test_finalize_boundaries.py::test_finalize_rejects_disputed_status FAILED [ 25%]
+tests/test_finalize_boundaries.py::test_finalize_settles_yes FAILED      [ 31%]
+tests/test_init_invariants.py::test_full_dispute_deadline_invariant FAILED [ 37%]
+tests/test_init_invariants.py::test_requires_two_sources FAILED          [ 43%]
+tests/test_init_invariants.py::test_requires_two_domains FAILED          [ 50%]
+tests/test_init_invariants.py::test_rejects_short_binding FAILED         [ 56%]
+tests/test_init_invariants.py::test_rejects_past_staking_deadline FAILED [ 62%]
+tests/test_smoke.py::test_direct_deploy FAILED                           [ 68%]
+tests/test_sources.py::test_one_source_fallback FAILED                   [ 75%]
+tests/test_sources.py::test_two_sources_two_domains_verified FAILED      [ 81%]
+tests/test_sources.py::test_two_sources_same_domain_verified FAILED      [ 87%]
+tests/test_sources.py::test_three_sources_one_failed_load FAILED         [ 93%]
+tests/test_sources.py::test_validator_disagrees_on_binding FAILED        [100%]
+
+=================================== FAILURES ===================================
+E   ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)
+
+During handling of the above exception, another exception occurred:
+E   urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+----------------------------- Captured stdout call -----------------------------
+Downloading https://github.com/genlayerlabs/genvm/releases/download/v0.2.12/genvm-universal.tar.xz...
+/usr/lib/python3.14/urllib/request.py:1324: urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+E   ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)
+
+During handling of the above exception, another exception occurred:
+E   urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+----------------------------- Captured stdout call -----------------------------
+Downloading https://github.com/genlayerlabs/genvm/releases/download/v0.2.12/genvm-universal.tar.xz...
+/usr/lib/python3.14/urllib/request.py:1324: urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+E   ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)
+
+During handling of the above exception, another exception occurred:
+E   urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+----------------------------- Captured stdout call -----------------------------
+Downloading https://github.com/genlayerlabs/genvm/releases/download/v0.2.12/genvm-universal.tar.xz...
+/usr/lib/python3.14/urllib/request.py:1324: urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+E   ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)
+
+During handling of the above exception, another exception occurred:
+E   urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+----------------------------- Captured stdout call -----------------------------
+Downloading https://github.com/genlayerlabs/genvm/releases/download/v0.3.0-rc7/genvm-universal.tar.xz...
+/usr/lib/python3.14/urllib/request.py:1324: urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+E   ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)
+
+During handling of the above exception, another exception occurred:
+E   urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+----------------------------- Captured stdout call -----------------------------
+Downloading https://github.com/genlayerlabs/genvm/releases/download/v0.2.12/genvm-universal.tar.xz...
+/usr/lib/python3.14/urllib/request.py:1324: urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+E   ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)
+
+During handling of the above exception, another exception occurred:
+E   urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+----------------------------- Captured stdout call -----------------------------
+Downloading https://github.com/genlayerlabs/genvm/releases/download/v0.2.12/genvm-universal.tar.xz...
+/usr/lib/python3.14/urllib/request.py:1324: urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+E   ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)
+
+During handling of the above exception, another exception occurred:
+E   urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+----------------------------- Captured stdout call -----------------------------
+Downloading https://github.com/genlayerlabs/genvm/releases/download/v0.2.12/genvm-universal.tar.xz...
+/usr/lib/python3.14/urllib/request.py:1324: urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+E   ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)
+
+During handling of the above exception, another exception occurred:
+E   urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+----------------------------- Captured stdout call -----------------------------
+Downloading https://github.com/genlayerlabs/genvm/releases/download/v0.2.12/genvm-universal.tar.xz...
+/usr/lib/python3.14/urllib/request.py:1324: urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+E   ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)
+
+During handling of the above exception, another exception occurred:
+E   urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+----------------------------- Captured stdout call -----------------------------
+Downloading https://github.com/genlayerlabs/genvm/releases/download/v0.3.0-rc7/genvm-universal.tar.xz...
+/usr/lib/python3.14/urllib/request.py:1324: urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+E   ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)
+
+During handling of the above exception, another exception occurred:
+E   urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+----------------------------- Captured stdout call -----------------------------
+Downloading https://github.com/genlayerlabs/genvm/releases/download/v0.2.12/genvm-universal.tar.xz...
+/usr/lib/python3.14/urllib/request.py:1324: urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+E   ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)
+
+During handling of the above exception, another exception occurred:
+E   urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+----------------------------- Captured stdout call -----------------------------
+Downloading https://github.com/genlayerlabs/genvm/releases/download/v0.2.12/genvm-universal.tar.xz...
+/usr/lib/python3.14/urllib/request.py:1324: urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+E   ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)
+
+During handling of the above exception, another exception occurred:
+E   urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+----------------------------- Captured stdout call -----------------------------
+Downloading https://github.com/genlayerlabs/genvm/releases/download/v0.2.12/genvm-universal.tar.xz...
+/usr/lib/python3.14/urllib/request.py:1324: urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+E   AssertionError: Resolution opens after the staking deadline
+----------------------------- Captured stdout call -----------------------------
+Downloading https://github.com/genlayerlabs/genvm/releases/download/v0.2.12/genvm-universal.tar.xz...
+  0% (1MB)  0% (2MB)  1% (3MB)  1% (4MB)  2% (5MB)  2% (6MB)  3% (7MB)  3% (8MB)  4% (9MB)  4% (10MB)  5% (11MB)  5% (12MB)  6% (13MB)  6% (14MB)  7% (15MB)  7% (16MB)  8% (17MB)  8% (18MB)  9% (19MB)  9% (20MB)  10% (21MB)  10% (22MB)  11% (23MB)  11% (24MB)  12% (25MB)  12% (26MB)  13% (27MB)  13% (28MB)  14% (29MB)  14% (30MB)  15% (31MB)  15% (32MB)  15% (33MB)  16% (34MB)  16% (35MB)  17% (36MB)  17% (37MB)  18% (38MB)  18% (39MB)  19% (40MB)  19% (41MB)  20% (42MB)  20% (43MB)  21% (44MB)  21% (45MB)  22% (46MB)  22% (47MB)  23% (48MB)  23% (49MB)  24% (50MB)  24% (51MB)  25% (52MB)  25% (53MB)  26% (54MB)  26% (55MB)  27% (56MB)  27% (57MB)  28% (58MB)  28% (59MB)  29% (60MB)  29% (61MB)  30% (62MB)  30% (63MB)  30% (64MB)  31% (65MB)  31% (66MB)  32% (67MB)  32% (68MB)  33% (69MB)  33% (70MB)  34% (71MB)  34% (72MB)  35% (73MB)  35% (74MB)  36% (75MB)  36% (76MB)  37% (77MB)  37% (78MB)  38% (79MB)  38% (80MB)  39% (81MB)  39% (82MB)  40% (83MB)  40% (84MB)  41% (85MB)  41% (86MB)  42% (87MB)  42% (88MB)  43% (89MB)  43% (90MB)  44% (91MB)  44% (92MB)  45% (93MB)  45% (94MB)  45% (95MB)  46% (96MB)  46% (97MB)  47% (98MB)  47% (99MB)  48% (100MB)  48% (101MB)  49% (102MB)  49% (103MB)  50% (104MB)  50% (105MB)  51% (106MB)  51% (107MB)  52% (108MB)  52% (109MB)  53% (110MB)  53% (111MB)  54% (112MB)  54% (113MB)  55% (114MB)  55% (115MB)  56% (116MB)  56% (117MB)  57% (118MB)  57% (119MB)  58% (120MB)  58% (121MB)  59% (122MB)  59% (123MB)  60% (124MB)  60% (125MB)  60% (126MB)  61% (127MB)  61% (128MB)  62% (129MB)  62% (130MB)  63% (131MB)  63% (132MB)  64% (133MB)  64% (134MB)  65% (135MB)  65% (136MB)  66% (137MB)  66% (138MB)  67% (139MB)  67% (140MB)  68% (141MB)  68% (142MB)  69% (143MB)  69% (144MB)  70% (145MB)  70% (146MB)  71% (147MB)  71% (148MB)  72% (149MB)  72% (150MB)  73% (151MB)  73% (152MB)  74% (153MB)  74% (154MB)  75% (155MB)  75% (156MB)  75% (157MB)  76% (158MB)  76% (159MB)  77% (160MB)  77% (161MB)  78% (162MB)  78% (163MB)  79% (164MB)  79% (165MB)  80% (166MB)  80% (167MB)  81% (168MB)  81% (169MB)  82% (170MB)  82% (171MB)  83% (172MB)  83% (173MB)  84% (174MB)  84% (175MB)  85% (176MB)  85% (177MB)  86% (178MB)  86% (179MB)  87% (180MB)  87% (181MB)  88% (182MB)  88% (183MB)  89% (184MB)  89% (185MB)  90% (186MB)  90% (187MB)  90% (188MB)  91% (189MB)  91% (190MB)  92% (191MB)  92% (192MB)  93% (193MB)  93% (194MB)  94% (195MB)  94% (196MB)  95% (197MB)  95% (198MB)  96% (199MB)  96% (200MB)  97% (201MB)  97% (202MB)  98% (203MB)  98% (204MB)  99% (205MB)  99% (206MB)  100% (206MB)
+/root/genlayer/genlayer-prediction-market-v3/contracts/prediction_market.py:453: AssertionError: Resolution opens after the staking deadline
+E   AssertionError: Resolution opens after the staking deadline
+/root/genlayer/genlayer-prediction-market-v3/contracts/prediction_market.py:453: AssertionError: Resolution opens after the staking deadline
+E   AssertionError: Resolution opens after the staking deadline
+/root/genlayer/genlayer-prediction-market-v3/contracts/prediction_market.py:453: AssertionError: Resolution opens after the staking deadline
+E   AssertionError: Resolution opens after the staking deadline
+/root/genlayer/genlayer-prediction-market-v3/contracts/prediction_market.py:453: AssertionError: Resolution opens after the staking deadline
+=============================== warnings summary ===============================
+tests/test_sources.py::test_two_sources_two_domains_verified
+tests/test_sources.py::test_three_sources_one_failed_load
+tests/test_sources.py::test_validator_disagrees_on_binding
+  /usr/lib/python3.14/contextlib.py:482: RuntimeWarning: Web mock never matched: one\.example
+    callback(*args, **kwds)
+
+tests/test_sources.py::test_two_sources_two_domains_verified
+tests/test_sources.py::test_two_sources_same_domain_verified
+tests/test_sources.py::test_three_sources_one_failed_load
+tests/test_sources.py::test_validator_disagrees_on_binding
+  /usr/lib/python3.14/contextlib.py:482: RuntimeWarning: Web mock never matched: two\.example
+    callback(*args, **kwds)
+
+tests/test_sources.py::test_two_sources_two_domains_verified
+tests/test_sources.py::test_three_sources_one_failed_load
+tests/test_sources.py::test_validator_disagrees_on_binding
+  /usr/lib/python3.14/contextlib.py:482: RuntimeWarning: LLM mock never matched: neutral prediction-market resolver
+    callback(*args, **kwds)
+
+tests/test_sources.py::test_two_sources_same_domain_verified
+  /usr/lib/python3.14/contextlib.py:482: RuntimeWarning: Web mock never matched: //one\.example/
+    callback(*args, **kwds)
+
+tests/test_sources.py::test_two_sources_same_domain_verified
+  /usr/lib/python3.14/contextlib.py:482: RuntimeWarning: Web mock never matched: //m.one.example/
+    callback(*args, **kwds)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_dispute_lifecycle.py::test_initial_dispute_boundaries - url...
+FAILED tests/test_dispute_lifecycle.py::test_two_dispute_rounds - urllib.erro...
+FAILED tests/test_finalize_boundaries.py::test_finalize_open_market_boundaries
+FAILED tests/test_finalize_boundaries.py::test_finalize_rejects_disputed_status
+FAILED tests/test_finalize_boundaries.py::test_finalize_settles_yes - urllib....
+FAILED tests/test_init_invariants.py::test_full_dispute_deadline_invariant - ...
+FAILED tests/test_init_invariants.py::test_requires_two_sources - urllib.erro...
+FAILED tests/test_init_invariants.py::test_requires_two_domains - urllib.erro...
+FAILED tests/test_init_invariants.py::test_rejects_short_binding - urllib.err...
+FAILED tests/test_init_invariants.py::test_rejects_past_staking_deadline - ur...
+FAILED tests/test_smoke.py::test_direct_deploy - urllib.error.URLError: <urlo...
+FAILED tests/test_sources.py::test_one_source_fallback - urllib.error.URLErro...
+FAILED tests/test_sources.py::test_two_sources_two_domains_verified - Asserti...
+FAILED tests/test_sources.py::test_two_sources_same_domain_verified - Asserti...
+FAILED tests/test_sources.py::test_three_sources_one_failed_load - AssertionE...
+FAILED tests/test_sources.py::test_validator_disagrees_on_binding - Assertion...
+================= 16 failed, 12 warnings in 388.49s (0:06:28) ==================

@@ -1,0 +1,114 @@
+WARNING: File `gltest.config.yaml` not found in the current directory, using default config, create a `gltest.config.yaml` file to manage multiple networks
+INFO: Clearing artifacts directory: artifacts
+INFO: Using the following configuration:
+INFO:   RPC URL: http://127.0.0.1:4000/api
+INFO:   Selected Network: localnet
+INFO:   Available networks: ['localnet', 'studionet', 'testnet_asimov', 'testnet_bradbury']
+INFO:   Selected chain type: localnet
+INFO:   Available chains: localnet, studionet, testnet_asimov, testnet_bradbury
+INFO:   Contracts directory: contracts
+INFO:   Artifacts directory: artifacts
+INFO:   Environment: .env
+INFO:   Default wait interval: 3000 ms
+INFO:   Default wait retries: 50
+INFO:   Leader only mode: False
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.1.1, pluggy-1.6.0 -- /root/genlayer/genlayer-prediction-market-v3/.venv314/bin/python
+rootdir: /root/genlayer/genlayer-prediction-market-v3
+configfile: pytest.ini
+plugins: genlayer-test-0.29.2
+collecting ... collected 16 items
+
+tests/test_dispute_lifecycle.py::test_initial_dispute_boundaries FAILED  [  6%]
+tests/test_dispute_lifecycle.py::test_two_dispute_rounds FAILED          [ 12%]
+tests/test_finalize_boundaries.py::test_finalize_open_market_boundaries FAILED [ 18%]
+tests/test_finalize_boundaries.py::test_finalize_rejects_disputed_status FAILED [ 25%]
+tests/test_finalize_boundaries.py::test_finalize_settles_yes FAILED      [ 31%]
+tests/test_init_invariants.py::test_full_dispute_deadline_invariant PASSED [ 37%]
+tests/test_init_invariants.py::test_requires_two_sources PASSED          [ 43%]
+tests/test_init_invariants.py::test_requires_two_domains PASSED          [ 50%]
+tests/test_init_invariants.py::test_rejects_short_binding PASSED         [ 56%]
+tests/test_init_invariants.py::test_rejects_past_staking_deadline PASSED [ 62%]
+tests/test_smoke.py::test_direct_deploy PASSED                           [ 68%]
+tests/test_sources.py::test_one_source_fallback FAILED                   [ 75%]
+tests/test_sources.py::test_two_sources_two_domains_verified FAILED      [ 81%]
+tests/test_sources.py::test_two_sources_same_domain_verified FAILED      [ 87%]
+tests/test_sources.py::test_three_sources_one_failed_load FAILED         [ 93%]
+tests/test_sources.py::test_validator_disagrees_on_binding FAILED        [100%]
+
+=================================== FAILURES ===================================
+E   AssertionError: Resolution opens after the staking deadline
+/root/genlayer/genlayer-prediction-market-v3/contracts/prediction_market.py:453: AssertionError: Resolution opens after the staking deadline
+E   AssertionError: Resolution opens after the staking deadline
+/root/genlayer/genlayer-prediction-market-v3/contracts/prediction_market.py:453: AssertionError: Resolution opens after the staking deadline
+E   AssertionError: Final deadline has not passed yet
+/root/genlayer/genlayer-prediction-market-v3/contracts/prediction_market.py:552: AssertionError: Final deadline has not passed yet
+E   AssertionError: Resolution opens after the staking deadline
+/root/genlayer/genlayer-prediction-market-v3/contracts/prediction_market.py:453: AssertionError: Resolution opens after the staking deadline
+E   AssertionError: Resolution opens after the staking deadline
+/root/genlayer/genlayer-prediction-market-v3/contracts/prediction_market.py:453: AssertionError: Resolution opens after the staking deadline
+E   AssertionError: Resolution opens after the staking deadline
+/root/genlayer/genlayer-prediction-market-v3/contracts/prediction_market.py:453: AssertionError: Resolution opens after the staking deadline
+E   AssertionError: Resolution opens after the staking deadline
+/root/genlayer/genlayer-prediction-market-v3/contracts/prediction_market.py:453: AssertionError: Resolution opens after the staking deadline
+E   AssertionError: Resolution opens after the staking deadline
+/root/genlayer/genlayer-prediction-market-v3/contracts/prediction_market.py:453: AssertionError: Resolution opens after the staking deadline
+E   AssertionError: Resolution opens after the staking deadline
+/root/genlayer/genlayer-prediction-market-v3/contracts/prediction_market.py:453: AssertionError: Resolution opens after the staking deadline
+E   AssertionError: Resolution opens after the staking deadline
+/root/genlayer/genlayer-prediction-market-v3/contracts/prediction_market.py:453: AssertionError: Resolution opens after the staking deadline
+=============================== warnings summary ===============================
+tests/test_dispute_lifecycle.py::test_initial_dispute_boundaries
+tests/test_dispute_lifecycle.py::test_two_dispute_rounds
+tests/test_finalize_boundaries.py::test_finalize_rejects_disputed_status
+tests/test_finalize_boundaries.py::test_finalize_settles_yes
+tests/test_sources.py::test_one_source_fallback
+tests/test_sources.py::test_two_sources_two_domains_verified
+tests/test_sources.py::test_three_sources_one_failed_load
+tests/test_sources.py::test_validator_disagrees_on_binding
+  /usr/lib/python3.14/contextlib.py:482: RuntimeWarning: Web mock never matched: one\.example
+    callback(*args, **kwds)
+
+tests/test_dispute_lifecycle.py::test_initial_dispute_boundaries
+tests/test_dispute_lifecycle.py::test_two_dispute_rounds
+tests/test_finalize_boundaries.py::test_finalize_rejects_disputed_status
+tests/test_finalize_boundaries.py::test_finalize_settles_yes
+tests/test_sources.py::test_one_source_fallback
+tests/test_sources.py::test_two_sources_two_domains_verified
+tests/test_sources.py::test_two_sources_same_domain_verified
+tests/test_sources.py::test_three_sources_one_failed_load
+tests/test_sources.py::test_validator_disagrees_on_binding
+  /usr/lib/python3.14/contextlib.py:482: RuntimeWarning: Web mock never matched: two\.example
+    callback(*args, **kwds)
+
+tests/test_dispute_lifecycle.py::test_initial_dispute_boundaries
+tests/test_dispute_lifecycle.py::test_two_dispute_rounds
+tests/test_finalize_boundaries.py::test_finalize_rejects_disputed_status
+tests/test_finalize_boundaries.py::test_finalize_settles_yes
+tests/test_sources.py::test_two_sources_two_domains_verified
+tests/test_sources.py::test_three_sources_one_failed_load
+tests/test_sources.py::test_validator_disagrees_on_binding
+  /usr/lib/python3.14/contextlib.py:482: RuntimeWarning: LLM mock never matched: neutral prediction-market resolver
+    callback(*args, **kwds)
+
+tests/test_sources.py::test_two_sources_same_domain_verified
+  /usr/lib/python3.14/contextlib.py:482: RuntimeWarning: Web mock never matched: //one\.example/
+    callback(*args, **kwds)
+
+tests/test_sources.py::test_two_sources_same_domain_verified
+  /usr/lib/python3.14/contextlib.py:482: RuntimeWarning: Web mock never matched: //m.one.example/
+    callback(*args, **kwds)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_dispute_lifecycle.py::test_initial_dispute_boundaries - Ass...
+FAILED tests/test_dispute_lifecycle.py::test_two_dispute_rounds - AssertionEr...
+FAILED tests/test_finalize_boundaries.py::test_finalize_open_market_boundaries
+FAILED tests/test_finalize_boundaries.py::test_finalize_rejects_disputed_status
+FAILED tests/test_finalize_boundaries.py::test_finalize_settles_yes - Asserti...
+FAILED tests/test_sources.py::test_one_source_fallback - AssertionError: Reso...
+FAILED tests/test_sources.py::test_two_sources_two_domains_verified - Asserti...
+FAILED tests/test_sources.py::test_two_sources_same_domain_verified - Asserti...
+FAILED tests/test_sources.py::test_three_sources_one_failed_load - AssertionE...
+FAILED tests/test_sources.py::test_validator_disagrees_on_binding - Assertion...
+================== 10 failed, 6 passed, 26 warnings in 3.02s ===================

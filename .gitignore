@@ -10,3 +10,4 @@ __pycache__/
 .venv-ubuntu/
 .pytest_cache/
 artifacts/
+.venv314/
