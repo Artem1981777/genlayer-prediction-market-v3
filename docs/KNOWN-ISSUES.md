@@ -1,23 +1,50 @@
 # Known Issues and Reproducible Workarounds
 
-This repository pins `genlayer-test==0.29.2` for the direct Intelligent Contract tests. The deterministic CI gate intentionally runs `sim_market.py` on Python 3.12 because the two issues below affect the direct harness rather than the contract logic.
+This file records the two environment/test-runner issues relevant to the v3 checklist. The first item was reported during the earlier setup work; the second was reproduced while running the newly expanded direct tests.
 
-## 1. Direct-deploy clock can remain stale
+## 1. `pydantic-core` wheel availability depends on Python/platform
 
-**Symptom.** A test calls `direct_vm.warp(...)`, deploys a contract, and then the constructor or the first lifecycle call observes an earlier timestamp. The resulting assertion is typically `Resolution opens after the staking deadline` or `Final deadline has not passed yet`, even though the test has just warped beyond that deadline.
+**Historical symptom.** On a Python/platform combination without a compatible prebuilt wheel, the minimal setup command fails during dependency installation with an error of this form:
 
-**Minimal reproduction.** In a direct test, deploy a market with a future `staking_deadline`, call `direct_vm.warp("2026-09-07T13:00:01.000Z")`, and immediately call `market.resolve()`. With the affected runner state, the contract sees the previous chain datetime.
+```text
+ERROR: Could not build wheels for pydantic-core, which is required to install pyproject.toml-based projects
+error: can't find Rust compiler
 
-**Workaround used here.** `tests/conftest.py` wraps `direct_vm.warp` and synchronizes both `genlayer.gl.message_raw` and `genlayer._internal.msg.message_raw` to the VM datetime. The simulator independently sets the same mocked chain datetime before every boundary assertion. This makes time behavior explicit and deterministic.
+This package requires Rust and Cargo to compile extensions. Install Rust or use a Python/platform combination with a compatible pydantic-core wheel.
+```
 
-## 2. HTTP mock matching is protocol-sensitive
+**Minimal reproduction.** From a clean virtual environment, run:
 
-**Symptom.** `direct_vm.mock_web` may report an unused mock or return a failed load when the regular expression is written only for a host/path fragment, while the runner request includes a protocol-prefixed or normalized URL. The affected tests then observe zero admissible sources or a consensus mismatch.
+```bash
+python -m pip install genlayer-test==0.29.2
+```
 
-**Minimal reproduction.** Register `mock_web(r"one\\.example", ...)` for a request configured as `https://one.example/evidence`, then inspect the runner warning that the web mock was never matched. Variants using `//one.example/` can fail similarly depending on the runner's request serialization.
+The failure is conditional: it occurs when the selected interpreter/platform has no matching `pydantic-core` wheel and pip falls back to a source build. It does **not** reproduce on the final GitHub Actions target used here (Ubuntu x86_64, Python 3.12): the exact command completed successfully and selected `pydantic_core-2.46.5-cp312-...manylinux...whl`.
 
-**Workaround used here.** Direct tests register protocol-independent host patterns where possible and assert the contract's recorded verification counts. The authoritative no-network CI proof uses `sim_market.py`, whose `_Web.render` performs exact URL-key lookup for the same URLs stored in the frozen configuration. A failed load is represented explicitly by an absent page and is therefore covered by the one-source fallback tests.
+**Workaround actually used.** Pin the test environment to Python 3.12 and install `genlayer-test==0.29.2` there, rather than attempting a Rust build in CI. If a local environment still lacks a wheel, either use the same Python/platform combination or install Rust/Cargo before retrying. No pydantic workaround is needed on the verified Linux x86_64 runner.
 
-## CI policy
+## 2. Pinned direct-test runner downloads a missing `genvm` release asset
 
-GitHub Actions installs Python 3.12 and runs `python sim_market.py` on every push and pull request to `main`. The simulation is stdlib-only and exercises the exact contract source, including source binding, hostile disputant context, dispute deadlines, finalization, void boundaries, refunds, and the two-source quorum. Direct `pytest` tests remain available for a compatible GenLayer test runner and are not treated as a network-dependent CI gate.
+**Exact symptom reproduced.** Installing the pinned packages succeeds on Python 3.12, but the first direct VM test tries to download a release asset that is no longer available:
+
+```text
+Downloading https://github.com/genlayerlabs/genvm/releases/download/v0.3.0-rc7/genvm-universal.tar.xz...
+urllib.error.HTTPError: HTTP Error 404: Not Found
+```
+
+All 25 direct pytest tests fail at this setup step before contract assertions execute. This is a runner/fixture asset-availability problem, not a contract assertion failure.
+
+**Minimal reproduction.** In a clean Python 3.12 environment:
+
+```bash
+pip install -r requirements-test.txt
+pytest tests/ -q
+```
+
+The first direct VM fixture initialization requests the URL above and receives HTTP 404.
+
+**Workaround actually used.** The CI gate runs the stdlib-only `python sim_market.py`, which loads the real contract source and does not require the unavailable `genvm` release asset. The direct tests remain in the repository for a compatible GenLayer test runner or a restored `v0.3.0-rc7` asset. No fake green pytest result is claimed.
+
+## CI policy and successful run
+
+GitHub Actions uses Python 3.12 and runs the deterministic simulator on every push and pull request to `main`. The successful run for commit `f40f3c0e6bddcb474a243d1afeb0aef4e5873fd9` is [GitHub Actions run 34969823046](https://github.com/Artem1981777/genlayer-prediction-market-v3/actions/runs/34969823046).

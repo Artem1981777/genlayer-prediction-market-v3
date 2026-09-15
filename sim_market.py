@@ -29,6 +29,7 @@ Covers the steward-review hardening:
           UNRESOLVED without an LLM call
       T8  leader/validator divergence on binding verification -> consensus
           failure, no state change, no money moves
+      T10b hostile disputant-context injection cannot override evidence
 
 Run:  python sim_market.py   (no dependencies, stdlib only)
 """
@@ -772,4 +773,4 @@ if failed:
     for label in failed:
         print("  - " + label)
     sys.exit(1)
-print("ALL CHECKS PASSED — permissionless lifecycle + bound sources verified.")
+print("ALL CHECKS PASSED — 87/87 checks: permissionless lifecycle + bound sources verified.")

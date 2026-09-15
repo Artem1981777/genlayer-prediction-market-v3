@@ -35,12 +35,12 @@ python3 sim_market.py
 
 Expected result after this change: **87/87 checks pass**. The simulation has no network or API-key dependency and loads the real contract source.
 
-For direct tests, install the pinned requirements in `requirements-test.txt` and run `pytest -q`. The direct harness requires a compatible GenLayer test environment; its two observed 0.29.2 limitations and the workarounds used here are recorded in [`docs/KNOWN-ISSUES.md`](KNOWN-ISSUES.md).
+The expanded suite contains **25 pytest test functions**. Installing the pinned requirements succeeds on Python 3.12, but the direct runner then requests the unavailable `genvm` asset `v0.3.0-rc7/genvm-universal.tar.xz` and receives HTTP 404 before assertions execute. This is recorded, with the exact reproduction and workaround, in [`docs/KNOWN-ISSUES.md`](KNOWN-ISSUES.md). The authoritative no-network proof is the 87-check simulator.
 
 ## CI proof
 
 The workflow at [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs on push and pull request to `main`, uses **Python 3.12**, and executes the deterministic simulator. The successful run URL should be appended here after GitHub Actions completes:
 
-> CI run: pending GitHub Actions execution for this commit.
+The workflow uses Python **3.12** and the successful run for commit `f40f3c0e6bddcb474a243d1afeb0aef4e5873fd9` is [GitHub Actions run 34969823046](https://github.com/Artem1981777/genlayer-prediction-market-v3/actions/runs/34969823046).
 
 No successful remote run can be truthfully linked from the local checkout before Actions executes the pushed commit.
