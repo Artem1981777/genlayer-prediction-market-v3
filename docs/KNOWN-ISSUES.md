@@ -47,4 +47,4 @@ The first direct VM fixture initialization requests the URL above and receives H
 
 ## CI policy and successful run
 
-GitHub Actions uses Python 3.12 and runs the deterministic simulator on every push and pull request to `main`. The successful run for commit `f40f3c0e6bddcb474a243d1afeb0aef4e5873fd9` is [GitHub Actions run 34969823046](https://github.com/Artem1981777/genlayer-prediction-market-v3/actions/runs/34969823046).
+GitHub Actions uses Python 3.12 and runs the deterministic simulator on every push and pull request to `main`. The successful run for commit `98370f379f2b9493b7569ffdb6336e573a73f739` is [GitHub Actions run 34969996315](https://github.com/Artem1981777/genlayer-prediction-market-v3/actions/runs/34969996315).

@@ -44,7 +44,7 @@ CHECKS: 87  PASSED: 87  FAILED: 0
 
 The source-level pytest suite contains **25 test functions**. Direct GenLayer tests require the pinned `genlayer-test==0.29.2` environment; the clock synchronization workaround is in `tests/conftest.py`. The pydantic-core wheel issue is conditional on interpreter/platform and does not reproduce on the verified Python 3.12 Linux x86_64 target.
 
-The GitHub Actions workflow uses Python 3.12 and has a successful run for this commit: [run 34969823046](https://github.com/Artem1981777/genlayer-prediction-market-v3/actions/runs/34969823046).
+The GitHub Actions workflow uses Python 3.12 and has a successful run for this commit: [run 34969996315](https://github.com/Artem1981777/genlayer-prediction-market-v3/actions/runs/34969996315).
 
 ## Evidence repository
 

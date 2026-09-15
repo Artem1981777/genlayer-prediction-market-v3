@@ -41,6 +41,6 @@ The expanded suite contains **25 pytest test functions**. Installing the pinned 
 
 The workflow at [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs on push and pull request to `main`, uses **Python 3.12**, and executes the deterministic simulator. The successful run URL should be appended here after GitHub Actions completes:
 
-The workflow uses Python **3.12** and the successful run for commit `f40f3c0e6bddcb474a243d1afeb0aef4e5873fd9` is [GitHub Actions run 34969823046](https://github.com/Artem1981777/genlayer-prediction-market-v3/actions/runs/34969823046).
+The workflow uses Python **3.12** and the successful run for commit `98370f379f2b9493b7569ffdb6336e573a73f739` is [GitHub Actions run 34969996315](https://github.com/Artem1981777/genlayer-prediction-market-v3/actions/runs/34969996315).
 
 No successful remote run can be truthfully linked from the local checkout before Actions executes the pushed commit.
